@@ -2,23 +2,23 @@ import sys
 
 
 class Graf:
-    
-    def dfs(visited, graph, node):  #function for dfs 
+
+    def dfs(visited, graph, node):  # Поиск в глубину
         if node not in visited:
-            print (node)
+            print(node)
             visited.add(node)
             for neighbour in graph[node]:
                 Graf.dfs(visited, graph, neighbour)
 
-    def bfs(visited, graph, node): #function for BFS
+    def bfs(visited, graph, node):  # Поиск в ширину
         visited = []
         queue = []
         visited.append(node)
         queue.append(node)
 
-        while queue:          # Creating loop to visit each node
-            m = queue.pop(0) 
-            print (m, end = " ") 
+        while queue:          # Создание цикла для посещения каждого узла
+            m = queue.pop(0)
+            print(m, end=" ")
 
             for neighbour in graph[m]:
                 if neighbour not in visited:
@@ -26,60 +26,61 @@ class Graf:
                     queue.append(neighbour)
 
     def __init__(self, vertices):
-            self.V = vertices
-            self.graph = []
+        self.V = vertices
+        self.graph = []
 
+    # Алгоритм Дейкстры
     def printSolution(self, dist):
         print("Vertex \t Distance from Source")
         for node in range(self.V):
             print(node, "\t\t", dist[node])
 
     def minDistance(self, dist, sptSet):
- 
+
         min = 1e7
- 
+
         for v in range(self.V):
             if dist[v] < min and sptSet[v] == False:
                 min = dist[v]
                 min_index = v
- 
+
         return min_index
- 
+
     def dijkstra(self, src):
- 
+
         dist = [1e7] * self.V
         dist[src] = 0
         sptSet = [False] * self.V
- 
+
         for cout in range(self.V):
- 
+
             u = self.minDistance(dist, sptSet)
- 
+
             sptSet[u] = True
- 
+
             for v in range(self.V):
                 if (self.graph[u][v] > 0 and
                    sptSet[v] == False and
                    dist[v] > dist[u] + self.graph[u][v]):
                     dist[v] = dist[u] + self.graph[u][v]
- 
+
         self.printSolution(dist)
-    
+
+    # Алгоритм Прима
     def Prims(G, N):
         INF = 9999999
         selected_node = [0]*(N)
-        #selected_node[0]= True
         no_edge = 0
         print("Edge : Weight\n")
-        while (no_edge < N - 1): 
+        while (no_edge < N - 1):
             minimum = INF
             a = 0
             b = 0
             for m in range(N):
                 if selected_node[m]:
                     for n in range(N):
-                        if ((not selected_node[n]) and G[m][n]):  
-                            # not in selected and there is an edge
+                        if ((not selected_node[n]) and G[m][n]):
+                            # не выделено, и есть край
                             if minimum > G[m][n]:
                                 minimum = G[m][n]
                                 a = m
@@ -89,82 +90,82 @@ class Graf:
             no_edge += 1
 
     def printMST(self, parent):
-            print("Edge \tWeight")
-            for i in range(1, self.V):
-                print(parent[i], "-", i, "\t", self.graph[i][parent[i]])
-    
-    # A utility function to find the vertex with
-    # minimum distance value, from the set of vertices
-    # not yet included in shortest path tree
+        print("Edge \tWeight")
+        for i in range(1, self.V):
+            print(parent[i], "-", i, "\t", self.graph[i][parent[i]])
+
+    # Вспомогательная функция для поиска вершины с
+    # минимальное значение расстояния от набора вершин
+    # еще не включено в дерево кратчайших путей
     def minKey(self, key, mstSet):
- 
-        # Initialize min value
+
+        # Инициализировать минимальное значение
         min = sys.maxsize
- 
+
         for v in range(self.V):
             if key[v] < min and mstSet[v] == False:
                 min = key[v]
                 min_index = v
- 
+
         return min_index
- 
-    # Function to construct and print MST for a graph
-    # represented using adjacency matrix representation
+
+    # Функция для построения и печати MST для графика
+    # представлено с использованием представления матрицы смежности
     def primMST(self):
- 
-        # Key values used to pick minimum weight edge in cut
+
+        # Ключевые значения, используемые для выбора кромки минимального веса в разрезе
         key = [sys.maxsize] * self.V
-        parent = [None] * self.V  # Array to store constructed MST
-        # Make key 0 so that this vertex is picked as first vertex
+        parent = [None] * self.V  # Массив для хранения сконструированного MST
+        # Сделайте ключ 0, чтобы эта вершина была выбрана в качестве первой вершины
         key[0] = 0
         mstSet = [False] * self.V
- 
-        parent[0] = -1  # First node is always the root of
- 
+
+        parent[0] = -1  # Первый узел всегда является корнем
+
         for cout in range(self.V):
- 
-            # Pick the minimum distance vertex from
-            # the set of vertices not yet processed.
-            # u is always equal to src in first iteration
+
+            # Выберите вершину на минимальном расстоянии от
+            # набор вершин, которые еще не обработаны.
+            # u всегда равно src на первой итерации
             u = self.minKey(key, mstSet)
- 
-            # Put the minimum distance vertex in
-            # the shortest path tree
+
+            # Поместите вершину минимального расстояния в
+            # дерево кратчайшего пути
             mstSet[u] = True
- 
-            # Update dist value of the adjacent vertices
-            # of the picked vertex only if the current
-            # distance is greater than new distance and
-            # the vertex in not in the shortest path tree
+
+            # Обновить значение dist соседних вершин
+            # выбранной вершины, только если текущая
+            # расстояние больше, чем новое расстояние, и
+            # вершина не находится в дереве кратчайшего пути
             for v in range(self.V):
- 
-                # graph[u][v] is non zero only for adjacent vertices of m
-                # mstSet[v] is false for vertices not yet included in MST
-                # Update the key only if graph[u][v] is smaller than key[v]
+
+                # graph[u][v] отличен от нуля только для смежных вершин m
+                # должно быть установлено mstSet[v] false для вершин, еще не включенных в MST
+                # Обновляйте ключ только в том случае, если graph[u][v] меньше key[v]
                 if self.graph[u][v] > 0 and mstSet[v] == False \
-                and key[v] > self.graph[u][v]:
+                        and key[v] > self.graph[u][v]:
                     key[v] = self.graph[u][v]
                     parent[v] = u
- 
+
         self.printMST(parent)
 
-        # Algorithm 
+    # Алгоритм Флойда-Уоршалла
     def floyd(G, nV):
 
         dist = list(map(lambda p: list(map(lambda q: q, p)), G))
-        # Adding vertices individually
+        # Добавление вершин по отдельности
         for r in range(nV):
             for p in range(nV):
                 for q in range(nV):
                     dist[p][q] = min(dist[p][q], dist[p][r] + dist[r][q])
-        Graf.sol(dist,nV)
+        Graf.sol(dist, nV)
 
-    # Printing the output
-    def sol(dist,nV):
+    # Вывод
+    def sol(dist, nV):
         INF = 999
         for p in range(nV):
             for q in range(nV):
-                if(dist[p][q] == INF):
+                if (dist[p][q] == INF):
                     print("INF", end=" ")
                 else:
                     print(dist[p][q], end="  ")
@@ -172,9 +173,7 @@ class Graf:
 
     # Крускал алгоритм
     def add_edge(self, u, v, w):
-            self.graph.append([u, v, w])
-
-    # Search function
+        self.graph.append([u, v, w])
 
     def find(self, parent, i):
         if parent[i] == i:
@@ -191,8 +190,7 @@ class Graf:
         else:
             parent[yroot] = xroot
             rank[xroot] += 1
-        
-    #  Applying Kruskal algorithm
+
     def kruskal_algo(self):
         result = []
         i, e = 0, 0
